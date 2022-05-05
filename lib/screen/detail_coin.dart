@@ -3,8 +3,10 @@ import 'package:coin/model/coin_entity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '/model/price.dart';
+import '../widgets/chart_button.dart';
 
 class DetailCoin extends StatefulWidget {
   const DetailCoin({Key? key}) : super(key: key);
@@ -21,12 +23,26 @@ class _DetailCoinState extends State<DetailCoin> {
   List<charts.Series<Price, DateTime>> _seriesDataYear = [];
   List<charts.Series<Price, DateTime>> data = [];
   ChartStatus status = ChartStatus.day;
+  final box = GetStorage();
+  List<String> favorite = [];
+
+  void readFavorite() {
+    var read = box.read('favorite');
+    if (read != null) {
+      setState(() {
+        favorite = read;
+      });
+    } else {
+      box.write('favorite', {});
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     coin = CoinEntity.fromJson(Get.arguments);
     getData();
+    readFavorite();
   }
 
   void getData() async {
@@ -41,6 +57,7 @@ class _DetailCoinState extends State<DetailCoin> {
 
   Future<List<charts.Series<Price, DateTime>>> getApi(int hour) async {
     List<Price> chart = [];
+
     List<charts.Series<Price, DateTime>> _seriesData = [];
     String from = (DateTime.now()
                 .subtract(Duration(hours: hour))
@@ -115,38 +132,7 @@ class _DetailCoinState extends State<DetailCoin> {
       body: Column(
         children: [
           Expanded(child: buildChart()),
-          SizedBox(
-            height: 60,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ChartButton(
-                  status: status,
-                  press: () => clickStatus(ChartStatus.day),
-                  text: 'Day',
-                  selected: status == ChartStatus.day,
-                ),
-                ChartButton(
-                  status: status,
-                  press: () => clickStatus(ChartStatus.week),
-                  text: 'Week',
-                  selected: status == ChartStatus.week,
-                ),
-                ChartButton(
-                  status: status,
-                  press: () => clickStatus(ChartStatus.month),
-                  text: 'Month',
-                  selected: status == ChartStatus.month,
-                ),
-                ChartButton(
-                  status: status,
-                  press: () => clickStatus(ChartStatus.year),
-                  text: 'Year',
-                  selected: status == ChartStatus.year,
-                )
-              ],
-            ),
-          )
+          buildListButton(),
         ],
       ),
     );
@@ -155,9 +141,33 @@ class _DetailCoinState extends State<DetailCoin> {
   AppBar buildAppBar() => AppBar(
         title: Text(
           coin.name ?? 'Coin',
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              if (coin.id != null) {
+                if (favorite.contains(coin.id ?? '')) {
+                  setState(() {
+                    favorite.remove(coin.id!);
+                  });
+                } else {
+                  setState(() {
+                    favorite.add(coin.id!);
+                  });
+                }
+                box.write('favorite', favorite);
+              }
+            },
+            icon: Icon(
+              favorite.contains(coin.id ?? '')
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: Colors.red,
+            ),
+          )
+        ],
       );
 
   Widget buildChart() {
@@ -171,38 +181,39 @@ class _DetailCoinState extends State<DetailCoin> {
       ),
     );
   }
+
+  Widget buildListButton() => SizedBox(
+        height: 60,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ChartButton(
+              status: status,
+              press: () => clickStatus(ChartStatus.day),
+              text: 'Day',
+              selected: status == ChartStatus.day,
+            ),
+            ChartButton(
+              status: status,
+              press: () => clickStatus(ChartStatus.week),
+              text: 'Week',
+              selected: status == ChartStatus.week,
+            ),
+            ChartButton(
+              status: status,
+              press: () => clickStatus(ChartStatus.month),
+              text: 'Month',
+              selected: status == ChartStatus.month,
+            ),
+            ChartButton(
+              status: status,
+              press: () => clickStatus(ChartStatus.year),
+              text: 'Year',
+              selected: status == ChartStatus.year,
+            )
+          ],
+        ),
+      );
 }
 
 enum ChartStatus { day, week, month, year }
-
-class ChartButton extends StatelessWidget {
-  const ChartButton(
-      {Key? key,
-      required this.status,
-      required this.press,
-      required this.text,
-      required this.selected})
-      : super(key: key);
-
-  final ChartStatus status;
-  final Function press;
-  final String text;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () => press(),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: selected ? Colors.grey.withOpacity(.3) : Colors.transparent,
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-          child: Text(text),
-        ),
-      ),
-    );
-  }
-}

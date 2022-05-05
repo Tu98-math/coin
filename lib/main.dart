@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '/screen/favorite_coin.dart';
 import '/screen/search_coin.dart';
 import '/screen/top_100_coin.dart';
 import '/screen/top_5_coin.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(const MyApp());
 }
 
@@ -36,10 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int tabIndex = 0;
 
   List<Widget> tab = [
-    Top100Coin(),
-    Top5Coin(),
-    SearchCoin(),
-    FavoriteCoin(),
+    const Top100Coin(),
+    const Top5Coin(),
+    const SearchCoin(),
+    const FavoriteCoin(),
   ];
 
   void goTab(int index) {
