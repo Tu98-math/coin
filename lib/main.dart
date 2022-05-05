@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '/screen/favorite_coin.dart';
 import '/screen/search_coin.dart';
@@ -14,10 +15,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: const MyHomePage(),
     );
@@ -53,11 +54,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: tab[
           tabIndex], // This trailing comma makes auto-formatting nicer for build methods.
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.title), label: 'Top 100'),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Top 100'),
           BottomNavigationBarItem(icon: Icon(Icons.title), label: 'Top 5'),
-          BottomNavigationBarItem(icon: Icon(Icons.title), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.title), label: 'Favorite'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'Favorite'),
         ],
         onTap: (index) => goTab(index),
         showSelectedLabels: true,
