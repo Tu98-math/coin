@@ -1,8 +1,9 @@
-import 'package:coin/screen/favorite_coin.dart';
-import 'package:coin/screen/search_coin.dart';
-import 'package:coin/screen/top_100_coin.dart';
-import 'package:coin/screen/top_5_coin.dart';
 import 'package:flutter/material.dart';
+
+import '/screen/favorite_coin.dart';
+import '/screen/search_coin.dart';
+import '/screen/top_100_coin.dart';
+import '/screen/top_5_coin.dart';
 
 void main() {
   runApp(const MyApp());
