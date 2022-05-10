@@ -28,7 +28,7 @@ class _DetailCoinState extends State<DetailCoin> {
 
   void readFavorite() {
     var read = box.read('favorite');
-    if (read != null) {
+    if (read != {}) {
       setState(() {
         favorite = read;
       });

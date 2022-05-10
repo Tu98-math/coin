@@ -23,6 +23,8 @@ class _Top100CoinState extends State<Top100Coin> {
   Future<void> getApi() async {
     final response = await Dio().get(
         'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
+    // data = List.from(response.data).map((e) => CoinEntity.fromJson(e)).toList();
+
     for (var json in response.data) {
       data.add(CoinEntity.fromJson(json));
     }
